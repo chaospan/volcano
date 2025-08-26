@@ -47,7 +47,7 @@ func buildSimulatorCmd() *cobra.Command {
 			InitFlags: simulator.InitCreateClusterFlags,
 		},
 		{
-			Use:   "delete-cluster [cluster-name]",
+			Use:   "delete-cluster [cluster-name] [--config node-config-file]",
 			Short: "delete cluster for the scheduler simulator",
 			Args:  cobra.ExactArgs(1),
 			RunFunction: func(cmd *cobra.Command, args []string) {
@@ -57,12 +57,20 @@ func buildSimulatorCmd() *cobra.Command {
 			InitFlags: simulator.InitDeleteClusterFlags,
 		},
 		{
-			Use:   "run-tests",
+			Use:   "run-tests [--config test-case-file]",
 			Short: "run scheduling tests by the scheduler simulator",
 			RunFunction: func(cmd *cobra.Command, args []string) {
 				util.CheckError(cmd, simulator.RunTests(cmd.Context()))
 			},
 			InitFlags: simulator.InitRunTestsFlags,
+		},
+		{
+			Use:   "clean-tests",
+			Short: "clean scheduling tests by the scheduler simulator",
+			RunFunction: func(cmd *cobra.Command, args []string) {
+				util.CheckError(cmd, simulator.CleanTests(cmd.Context()))
+			},
+			InitFlags: simulator.InitCleanTestsFlags,
 		},
 	}
 

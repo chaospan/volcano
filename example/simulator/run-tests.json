@@ -22,7 +22,8 @@
     "replicas": 2,
     "queue": "default",
     "resources": {
-      "requests": { "cpu": "8", "memory": "4Gi", "nvidia.com/gpu": "8" }
+      "requests": { "cpu": "8", "memory": "4Gi", "nvidia.com/gpu": "8" },
+      "limits": { "cpu": "8", "memory": "4Gi", "nvidia.com/gpu": "8" }
     },
     "labels": {},
     "annotations": {},

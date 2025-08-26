@@ -33,6 +33,12 @@ import (
 	"volcano.sh/volcano/pkg/cli/util"
 )
 
+const (
+	SimulatorGroupLabelKey   = "simulator.volcano.sh/group"
+	SimulatorUsageLabelKey   = "simulator.volcano.sh/usage"
+	SimulatorUsageLabelValue = "simulator"
+)
+
 type runTestsFlags struct {
 	util.CommonFlags
 
@@ -144,23 +150,7 @@ func createPods(ctx context.Context, clientset kubernetes.Interface, config PodC
 }
 
 func deletePods(ctx context.Context, clientset kubernetes.Interface, config PodConfig) error {
-	// Delete all Pods from the specified group
-	labelSelector := metav1.LabelSelector{
-		MatchLabels: map[string]string{"group": config.GroupName},
-	}
-
-	deleteOptions := metav1.DeleteOptions{}
-	listOptions := metav1.ListOptions{
-		LabelSelector: metav1.FormatLabelSelector(&labelSelector),
-	}
-
-	err := clientset.CoreV1().Pods(config.Namespace).DeleteCollection(ctx, deleteOptions, listOptions)
-	if err != nil {
-		return fmt.Errorf("failed to delete pods for group %s: %v", config.GroupName, err)
-	}
-
-	klog.Errorf("Deleted pods for group: %s at %v", config.GroupName, time.Now())
-	return nil
+	return deletePodsWithLabel(ctx, clientset, config.Namespace, SimulatorGroupLabelKey, config.GroupName)
 }
 
 func createPodFromConfig(config PodConfig, index int) *corev1.Pod {
@@ -168,8 +158,8 @@ func createPodFromConfig(config PodConfig, index int) *corev1.Pod {
 
 	// Create basic labels and annotations
 	baseLabels := map[string]string{
-		"simulator.volcano.sh/group": config.GroupName,
-		"simulator.volcano.sh/usage": "simulator",
+		SimulatorGroupLabelKey: config.GroupName,
+		SimulatorUsageLabelKey: SimulatorUsageLabelValue,
 	}
 
 	baseAnnotations := map[string]string{
